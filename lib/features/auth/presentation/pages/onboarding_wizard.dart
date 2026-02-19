@@ -138,10 +138,8 @@ class OnboardingWizard extends ConsumerWidget {
         } else {
           // Finalize onboarding - Save to Firestore
           try {
-            // Using a temporary UID for now or real one if available
-            await ref
-                .read(onboardingProvider.notifier)
-                .saveData('test-user-123');
+            // Perform Account creation and Firestore save
+            await ref.read(onboardingProvider.notifier).saveData();
             if (context.mounted) {
               Navigator.of(context).pushReplacementNamed('/main');
             }
