@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "360954874888",
+    "project_id": "eatfits",
+    "storage_bucket": "eatfits.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:360954874888:android:4e695736934de71f7695bd",
+        "android_client_info": {
+          "package_name": "com.example.eatfits"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAu1SqwX0u8NDlaHImu1qhITyZa0e0rPy0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
