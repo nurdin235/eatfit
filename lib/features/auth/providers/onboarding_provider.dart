@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/onboarding_data.dart';
 
@@ -58,7 +59,18 @@ class OnboardingNotifier extends Notifier<OnboardingData> {
     state = state.copyWith(allergies: allergies);
   }
 
-  Future<void> saveData(String uid) async {
+  Future<void> saveData() async {
+    // 1. Create User in Firebase Auth
+    final userCredential = await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(
+          email: state.email,
+          password: state.password,
+        );
+
+    final uid = userCredential.user?.uid;
+    if (uid == null) throw Exception('User creation failed: UID is null');
+
+    // 2. Save additional data to Firestore
     final docRef = FirebaseFirestore.instance.collection('users').doc(uid);
     await docRef.set({
       'personalInfo': {
