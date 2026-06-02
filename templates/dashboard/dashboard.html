@@ -1,0 +1,75 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Dashboard | EatFit{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+    <div>
+        <p class="text-sm font-semibold uppercase tracking-wide text-green-700">{{ household.name }}</p>
+        <h1 class="text-3xl font-bold text-gray-950 tracking-tight">Welcome back, {{ request.user.first_name|default:request.user.username }}</h1>
+        <p class="mt-2 text-sm text-gray-600">Plan meals, control grocery cost, and keep household choices allergy-aware.</p>
+    </div>
+    <a href="{% url 'meals:create' %}" class="inline-flex items-center justify-center rounded-lg bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800">New meal plan</a>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white border border-gray-100 rounded-lg p-5 shadow-sm">
+        <p class="text-sm font-medium text-gray-500">Meals planned</p>
+        <p class="mt-2 text-3xl font-bold text-gray-950">{{ meal_count }}</p>
+    </div>
+    <div class="bg-white border border-gray-100 rounded-lg p-5 shadow-sm">
+        <p class="text-sm font-medium text-gray-500">Grocery cost</p>
+        <p class="mt-2 text-3xl font-bold text-gray-950">{% if grocery_list %}{{ grocery_list.total_estimated_cost_xaf|floatformat:0 }} XAF{% else %}0 XAF{% endif %}</p>
+    </div>
+    <div class="bg-white border border-gray-100 rounded-lg p-5 shadow-sm">
+        <p class="text-sm font-medium text-gray-500">Low stock items</p>
+        <p class="mt-2 text-3xl font-bold text-gray-950">{{ low_stock_count }}</p>
+    </div>
+    <div class="bg-white border border-gray-100 rounded-lg p-5 shadow-sm">
+        <p class="text-sm font-medium text-gray-500">Unread reminders</p>
+        <p class="mt-2 text-3xl font-bold text-gray-950">{{ unread_notifications }}</p>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+    <section class="xl:col-span-2 bg-white rounded-lg border border-gray-100 shadow-sm">
+        <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+            <div>
+                <h2 class="font-semibold text-gray-950">Active meal plan</h2>
+                {% if active_plan %}<p class="text-sm text-gray-500">{{ active_plan.start_date }} to {{ active_plan.end_date }}</p>{% endif %}
+            </div>
+            {% if active_plan %}<a href="{% url 'meals:detail' active_plan.pk %}" class="text-sm font-semibold text-green-700 hover:text-green-800">Open plan</a>{% endif %}
+        </div>
+        <div class="divide-y divide-gray-100">
+            {% for meal in todays_meals %}
+            <div class="px-5 py-4 flex items-center justify-between gap-4">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">{{ meal.date }} · {{ meal.get_meal_type_display }}</p>
+                    <h3 class="font-semibold text-gray-950">{{ meal }}</h3>
+                    {% if meal.is_ai_suggested %}<span class="mt-1 inline-flex rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-700">AI suggested</span>{% endif %}
+                </div>
+                <span class="text-sm text-gray-500">{{ meal.servings }} servings</span>
+            </div>
+            {% empty %}
+            <div class="px-5 py-10 text-center text-sm text-gray-500">Create a weekly plan to see upcoming meals here.</div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <aside class="space-y-6">
+        <div class="bg-white rounded-lg border border-gray-100 p-5 shadow-sm">
+            <h2 class="font-semibold text-gray-950 mb-4">Nutrition estimate</h2>
+            <div class="space-y-3 text-sm">
+                <div class="flex justify-between"><span>Calories</span><strong>{{ nutrition.calories|default:0|floatformat:0 }} kcal</strong></div>
+                <div class="flex justify-between"><span>Protein</span><strong>{{ nutrition.protein|default:0|floatformat:0 }} g</strong></div>
+                <div class="flex justify-between"><span>Carbs</span><strong>{{ nutrition.carbs|default:0|floatformat:0 }} g</strong></div>
+                <div class="flex justify-between"><span>Fat</span><strong>{{ nutrition.fat|default:0|floatformat:0 }} g</strong></div>
+            </div>
+        </div>
+        <div class="bg-green-50 border border-green-100 rounded-lg p-5">
+            <h2 class="font-semibold text-green-950">MVP+ safety note</h2>
+            <p class="mt-2 text-sm text-green-800">AI suggestions are advisory. EatFit filters recipes against allergies and requires your confirmation before anything is added to a plan.</p>
+        </div>
+    </aside>
+</div>
+{% endblock %}

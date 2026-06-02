@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}EatFit - Web-Based Meal Planning Application{% endblock %}</title>
+    <link href="{% static 'css/eatfit.css' %}" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js" integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V" crossorigin="anonymous"></script>
+    <script defer src="{% static 'js/eatfit.js' %}"></script>
+    {% block styles %}{% endblock %}
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans antialiased min-h-screen flex flex-col">
+    {# Shared layout: every page gets the navbar, sidebar, alerts, and footer. #}
+    {% include 'partials/navbar.html' %}
+    
+    <div class="flex-grow flex flex-col md:flex-row">
+        {% include 'partials/sidebar.html' %}
+        
+        <main class="flex-grow p-4 md:p-8 w-full transition-all duration-300">
+            {% include 'partials/alerts.html' %}
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    
+    {% include 'partials/footer.html' %}
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

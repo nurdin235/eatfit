@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+
+db.sqlite3
+media/
+resources/
+docs/
+docker/
+*.docx
+
+.venv/
+venv/
+node_modules/
+__pycache__/
+*.pyc

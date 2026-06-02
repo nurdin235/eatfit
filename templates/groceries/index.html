@@ -1,0 +1,28 @@
+{% extends "base/base.html" %}
+{% block title %}Groceries | EatFit{% endblock %}
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-950 tracking-tight">Grocery lists</h1>
+    <p class="mt-2 text-sm text-gray-600">Generated from meal plans with duplicate ingredients merged and pantry stock considered.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+    {% for list in lists %}
+    <article class="bg-white rounded-lg border border-gray-100 shadow-sm p-5">
+        <div class="flex items-start justify-between">
+            <div>
+                <h2 class="font-bold text-gray-950">{% if list.meal_plan %}{{ list.meal_plan.title }}{% else %}Grocery list{% endif %}</h2>
+                <p class="mt-1 text-sm text-gray-500">{{ list.created_at|date:"M d, Y" }}</p>
+            </div>
+            <span class="rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold text-gray-700">{{ list.get_status_display }}</span>
+        </div>
+        <div class="mt-5 flex justify-between text-sm">
+            <span>{{ list.items.count }} items</span>
+            <strong>{{ list.total_estimated_cost_xaf|floatformat:0 }} XAF</strong>
+        </div>
+        <a href="{% url 'groceries:detail' list.pk %}" class="mt-5 block rounded-lg border border-gray-200 px-3 py-2 text-center text-sm font-semibold text-gray-700 hover:bg-gray-50">Open list</a>
+    </article>
+    {% empty %}
+    <div class="col-span-full rounded-lg bg-white border border-gray-100 p-10 text-center text-sm text-gray-500">Generate a grocery list from any meal plan.</div>
+    {% endfor %}
+</div>
+{% endblock %}

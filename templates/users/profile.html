@@ -1,0 +1,23 @@
+{% extends "base/base.html" %}
+{% block title %}Profile | EatFit{% endblock %}
+{% block content %}
+<div class="max-w-3xl">
+    <h1 class="text-3xl font-bold text-gray-950">Profile and nutrition goals</h1>
+    <p class="mt-2 text-sm text-gray-600">These preferences drive recipe filtering, AI ranking, budget checks, and allergy safeguards.</p>
+
+    <form method="post" class="mt-8 bg-white border border-gray-100 rounded-lg shadow-sm p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="{% if field.name in 'allergies_text likes_text dislikes_text timezone measurement_system' %}md:col-span-2{% endif %}">
+            <label class="block text-sm font-semibold text-gray-700 mb-1" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<p class="mt-1 text-xs text-gray-500">{{ field.help_text }}</p>{% endif %}
+            {% if field.errors %}<p class="mt-1 text-sm text-red-600">{{ field.errors.0 }}</p>{% endif %}
+        </div>
+        {% endfor %}
+        <div class="md:col-span-2 flex justify-end">
+            <button class="rounded-lg bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800">Save profile</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

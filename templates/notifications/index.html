@@ -1,0 +1,49 @@
+{% extends "base/base.html" %}
+{% block title %}Notifications | EatFit{% endblock %}
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-950 tracking-tight">Notifications</h1>
+    <p class="mt-2 text-sm text-gray-600">In-app reminders for planned meals and system updates.</p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <section class="lg:col-span-2 bg-white border border-gray-100 rounded-lg shadow-sm">
+        <div class="border-b border-gray-100 px-5 py-4">
+            <h2 class="font-semibold text-gray-950">Inbox</h2>
+        </div>
+        <div class="divide-y divide-gray-100">
+            {% for notification in notifications %}
+            <div class="px-5 py-4 flex items-start justify-between gap-4 {% if not notification.is_read %}bg-green-50{% endif %}">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">{{ notification.get_notification_type_display }}</p>
+                    <h3 class="font-semibold text-gray-950">{{ notification.title }}</h3>
+                    <p class="mt-1 text-sm text-gray-600">{{ notification.message }}</p>
+                </div>
+                {% if not notification.is_read %}
+                <form method="post" action="{% url 'notifications:read' notification.pk %}">
+                    {% csrf_token %}
+                    <button class="text-sm font-semibold text-green-700">Mark read</button>
+                </form>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div class="px-5 py-10 text-center text-sm text-gray-500">No notifications yet.</div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <aside class="bg-white border border-gray-100 rounded-lg shadow-sm p-5">
+        <h2 class="font-semibold text-gray-950">Meal reminder settings</h2>
+        <form method="post" class="mt-5 space-y-4">
+            {% csrf_token %}
+            {% for field in form %}
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">{{ field.label }}</label>
+                {{ field }}
+            </div>
+            {% endfor %}
+            <button class="w-full rounded-lg bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800">Save settings</button>
+        </form>
+    </aside>
+</div>
+{% endblock %}

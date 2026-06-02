@@ -1,0 +1,43 @@
+{% extends "base/base.html" %}
+{% block title %}{{ recipe.title }} | EatFit{% endblock %}
+{% block content %}
+<div class="mb-6">
+    <a href="{% url 'recipes:index' %}" class="text-sm font-semibold text-green-700 hover:text-green-800">Back to recipes</a>
+    <div class="mt-4 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-950">{{ recipe.title }}</h1>
+            <p class="mt-2 text-sm text-gray-600">{{ recipe.description }}</p>
+        </div>
+        {% if recipe.household_id == request.user.active_household.id %}
+        <a href="{% url 'recipes:edit' recipe.pk %}" class="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800">Edit recipe</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <section class="lg:col-span-2 bg-white border border-gray-100 rounded-lg shadow-sm p-6">
+        <h2 class="font-semibold text-gray-950 mb-4">Cooking instructions</h2>
+        <p class="whitespace-pre-line text-sm leading-6 text-gray-700">{{ recipe.instructions }}</p>
+    </section>
+    <aside class="space-y-6">
+        <div class="bg-white border border-gray-100 rounded-lg shadow-sm p-5">
+            <h2 class="font-semibold text-gray-950 mb-4">Ingredients</h2>
+            <ul class="space-y-2 text-sm text-gray-700">
+                {% for item in recipe.ingredients.all %}
+                <li class="flex justify-between gap-3"><span>{{ item.ingredient.name }}</span><strong>{{ item.quantity|floatformat:1 }} {{ item.unit }}</strong></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="bg-white border border-gray-100 rounded-lg shadow-sm p-5">
+            <h2 class="font-semibold text-gray-950 mb-4">Nutrition and cost</h2>
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between"><span>Estimated cost</span><strong>{{ recipe.estimated_cost_xaf|floatformat:0 }} XAF</strong></div>
+                <div class="flex justify-between"><span>Calories</span><strong>{{ recipe.calories|floatformat:0 }} kcal</strong></div>
+                <div class="flex justify-between"><span>Protein</span><strong>{{ recipe.protein|floatformat:0 }} g</strong></div>
+                <div class="flex justify-between"><span>Carbs</span><strong>{{ recipe.carbs|floatformat:0 }} g</strong></div>
+                <div class="flex justify-between"><span>Fat</span><strong>{{ recipe.fat|floatformat:0 }} g</strong></div>
+            </div>
+        </div>
+    </aside>
+</div>
+{% endblock %}

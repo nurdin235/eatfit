@@ -1,0 +1,37 @@
+<nav class="bg-white shadow-sm border-b border-gray-200 z-10 sticky top-0">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <a href="{% url 'dashboard' %}" class="flex items-center">
+                <span class="text-2xl font-bold text-green-700 tracking-tight">EatFit</span>
+                <span class="ml-3 hidden sm:inline text-xs font-semibold uppercase tracking-wide text-gray-400">Meal planner</span>
+            </a>
+            <div class="flex items-center space-x-3">
+                {% if user.is_authenticated %}
+                <a href="{% url 'notifications:index' %}" class="relative p-2 rounded-full text-gray-500 hover:text-green-700 hover:bg-green-50">
+                    <span class="sr-only">View notifications</span>
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                </a>
+                <div class="relative" data-menu-root>
+                    <button data-menu-button type="button" class="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-2 py-1 text-sm hover:bg-gray-50" aria-expanded="false" aria-haspopup="true">
+                        <img class="h-8 w-8 rounded-full object-cover" src="https://ui-avatars.com/api/?name={{ user.username|urlencode }}&background=16a34a&color=fff" alt="">
+                        <span class="hidden sm:block font-medium text-gray-700">{{ user.username }}</span>
+                    </button>
+                    <div data-menu-panel hidden class="origin-top-right absolute right-0 mt-2 w-52 rounded-lg shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5">
+                        <a href="{% url 'profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                        <a href="{% url 'households' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Household</a>
+                        <form method="POST" action="{% url 'auth:logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100">Sign out</button>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                <a href="{% url 'auth:login' %}" class="text-sm font-medium text-gray-700 hover:text-green-700">Login</a>
+                <a href="{% url 'auth:register' %}" class="rounded-lg bg-green-700 px-3 py-2 text-sm font-semibold text-white hover:bg-green-800">Create account</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>

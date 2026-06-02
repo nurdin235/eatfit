@@ -1,0 +1,13 @@
+{% extends "base/base.html" %}
+{% block title %}Delete Recipe | EatFit{% endblock %}
+{% block content %}
+<div class="max-w-xl bg-white border border-gray-100 rounded-lg shadow-sm p-6">
+    <h1 class="text-2xl font-bold text-gray-950">Delete {{ recipe.title }}?</h1>
+    <p class="mt-2 text-sm text-gray-600">This removes the recipe from future planning. Existing meal plans may keep their historical meal names.</p>
+    <form method="post" class="mt-6 flex gap-3">
+        {% csrf_token %}
+        <button class="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700">Delete</button>
+        <a href="{% url 'recipes:detail' recipe.pk %}" class="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50">Cancel</a>
+    </form>
+</div>
+{% endblock %}

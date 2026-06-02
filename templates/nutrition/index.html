@@ -1,0 +1,28 @@
+{% extends "base/base.html" %}
+{% block title %}Nutrition | EatFit{% endblock %}
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-950 tracking-tight">Nutrition analytics</h1>
+    <p class="mt-2 text-sm text-gray-600">Informational estimates only. EatFit does not provide medical advice.</p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <section class="bg-white border border-gray-100 rounded-lg shadow-sm p-6">
+        <h2 class="font-semibold text-gray-950">Current plan totals</h2>
+        {% if plan %}<p class="mt-1 text-sm text-gray-500">{{ plan.title }}</p>{% endif %}
+        <div class="mt-6 space-y-4">
+            <div>
+                <div class="flex justify-between text-sm"><span>Calories</span><strong>{{ totals.calories|default:0|floatformat:0 }} / {{ profile.calorie_goal }} kcal</strong></div>
+                <div class="mt-2 h-2 rounded-full bg-gray-100"><div class="h-2 rounded-full bg-green-600" style="width: 65%"></div></div>
+            </div>
+            <div class="flex justify-between text-sm"><span>Protein</span><strong>{{ totals.protein|default:0|floatformat:0 }} / {{ profile.protein_goal }} g</strong></div>
+            <div class="flex justify-between text-sm"><span>Carbs</span><strong>{{ totals.carbs|default:0|floatformat:0 }} / {{ profile.carbs_goal }} g</strong></div>
+            <div class="flex justify-between text-sm"><span>Fat</span><strong>{{ totals.fat|default:0|floatformat:0 }} / {{ profile.fat_goal }} g</strong></div>
+        </div>
+    </section>
+    <section class="bg-green-50 border border-green-100 rounded-lg p-6">
+        <h2 class="font-semibold text-green-950">How values are calculated</h2>
+        <p class="mt-2 text-sm leading-6 text-green-800">Each ingredient stores local estimated macros per unit. Recipe totals are calculated from structured ingredient quantities, then scaled by meal servings.</p>
+    </section>
+</div>
+{% endblock %}

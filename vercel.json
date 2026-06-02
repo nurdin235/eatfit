@@ -1,0 +1,18 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "buildCommand": "npm run build:css && python scripts/vercel_build.py",
+  "functions": {
+    "app.py": {
+      "runtime": "python3.12",
+      "maxDuration": 30,
+      "excludeFiles": "{.env,.env.*,db.sqlite3,media/**,resources/**,docs/**,docker/**,*.docx,static/src/**,node_modules/**,.venv/**,venv/**,**/__pycache__/**,**/*.pyc}"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/app.py"
+    }
+  ]
+}

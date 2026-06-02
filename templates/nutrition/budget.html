@@ -1,0 +1,26 @@
+{% extends "base/base.html" %}
+{% block title %}Budget | EatFit{% endblock %}
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-950 tracking-tight">Budget tracking</h1>
+    <p class="mt-2 text-sm text-gray-600">Compare generated grocery totals against weekly limits.</p>
+</div>
+
+<div class="space-y-4">
+    {% for row in evaluations %}
+    <article class="bg-white border border-gray-100 rounded-lg shadow-sm p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h2 class="font-bold text-gray-950">{{ row.plan.title }}</h2>
+            <p class="mt-1 text-sm text-gray-500">{{ row.plan.start_date }} to {{ row.plan.end_date }}</p>
+        </div>
+        <div class="grid grid-cols-3 gap-3 text-sm text-center">
+            <div class="rounded-lg bg-gray-50 p-3"><span class="block text-gray-500">Budget</span><strong>{{ row.budget.budget_xaf|floatformat:0 }}</strong></div>
+            <div class="rounded-lg bg-gray-50 p-3"><span class="block text-gray-500">Spent</span><strong>{{ row.budget.total_xaf|floatformat:0 }}</strong></div>
+            <div class="rounded-lg {% if row.budget.is_over_budget %}bg-red-50 text-red-700{% else %}bg-green-50 text-green-700{% endif %} p-3"><span class="block">Left</span><strong>{{ row.budget.remaining_xaf|floatformat:0 }}</strong></div>
+        </div>
+    </article>
+    {% empty %}
+    <div class="rounded-lg bg-white border border-gray-100 p-10 text-center text-sm text-gray-500">Create meal plans and grocery lists to see budget evaluations.</div>
+    {% endfor %}
+</div>
+{% endblock %}

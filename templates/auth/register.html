@@ -1,0 +1,63 @@
+{% extends "base/base.html" %}
+
+{% block title %}Register - EatFit{% endblock %}
+
+{% block content %}
+<div class="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-xl border border-gray-100">
+    <div>
+      <h2 class="mt-2 text-center text-3xl font-extrabold text-gray-900 tracking-tight">
+        Create your account
+      </h2>
+      <p class="mt-2 text-center text-sm text-gray-600">
+        Already have an account?
+        <a href="{% url 'auth:login' %}" class="font-medium text-green-600 hover:text-green-500 transition-colors">
+          Sign in here
+        </a>
+      </p>
+    </div>
+    
+    <form class="mt-8 space-y-6" method="POST">
+      {# Required on Django POST forms so the server can verify the request is genuine. #}
+      {% csrf_token %}
+      
+      <!-- Non-field errors -->
+      {% if form.non_field_errors %}
+        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
+          {% for error in form.non_field_errors %}
+            <span class="block sm:inline">{{ error }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="rounded-md shadow-sm space-y-4">
+        {% for field in form %}
+        <div>
+          <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ field.label }}</label>
+          <div class="mt-1">
+            <input id="{{ field.id_for_label }}" name="{{ field.html_name }}" type="{{ field.field.widget.input_type|default:'text' }}" {% if field.field.required %}required{% endif %} class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+          </div>
+          {% if field.help_text %}
+            <p class="mt-1 text-xs text-gray-500">{{ field.help_text }}</p>
+          {% endif %}
+          {% if field.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ field.errors.0 }}</p>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <div>
+        <button type="submit" class="group relative w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all shadow-sm">
+          <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+            <svg class="h-5 w-5 text-green-500 group-hover:text-green-400 transition-colors" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+            </svg>
+          </span>
+          Register Now
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

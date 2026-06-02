@@ -1,0 +1,18 @@
+{% extends "base/base.html" %}
+{% block title %}Pantry Item | EatFit{% endblock %}
+{% block content %}
+<div class="max-w-xl bg-white border border-gray-100 rounded-lg shadow-sm p-6">
+    <h1 class="text-2xl font-bold text-gray-950">{% if item %}Edit{% else %}Add{% endif %} pantry item</h1>
+    <form method="post" class="mt-6 space-y-4">
+        {% csrf_token %}
+        {% for field in form %}
+        <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<p class="mt-1 text-sm text-red-600">{{ field.errors.0 }}</p>{% endif %}
+        </div>
+        {% endfor %}
+        <button class="rounded-lg bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800">Save item</button>
+    </form>
+</div>
+{% endblock %}
