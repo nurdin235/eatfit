@@ -3,268 +3,241 @@
 {% block title %}Meal Plan Details | EatFit{% endblock %}
 
 {% block content %}
-<div class="meal-menu">
-    <section class="meal-menu-stage p-3 sm:p-5 lg:p-8">
-        <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_390px]">
-            <div class="meal-menu-phone min-h-[760px]">
-                <div class="relative z-10 p-5 sm:p-8 lg:p-10">
-                    <div class="flex items-center justify-between gap-4">
-                        <a href="{% url 'meals:index' %}" class="grid h-10 w-10 place-items-center rounded-full bg-white/15 text-white lg:bg-transparent" aria-label="Back to meal plans">
-                            <span class="text-2xl leading-none">&lsaquo;</span>
-                        </a>
-                        <form method="post" action="{% url 'meals:generate_grocery' meal_plan.pk %}">
-                            {% csrf_token %}
-                            <button class="meal-menu-action h-12 px-5 text-sm font-black">Groceries</button>
-                        </form>
+<div class="meal-menu space-y-6">
+    <section class="meal-menu-hero p-6 text-white sm:p-8 lg:p-10">
+        <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+            <div>
+                <a href="{% url 'meals:index' %}" class="inline-flex items-center rounded-full bg-white/15 px-4 py-2 text-sm font-black text-white hover:bg-white/20">&lsaquo; Back to plans</a>
+                <p class="mt-7 text-sm font-black uppercase tracking-[0.2em] text-white/75">{{ meal_plan.household.name }}</p>
+                <h1 class="mt-2 max-w-4xl text-4xl font-black leading-tight tracking-tight sm:text-5xl">{{ meal_plan.title }}</h1>
+                <p class="mt-4 text-sm leading-6 text-white/86">{{ meal_plan.start_date }} to {{ meal_plan.end_date }}</p>
+            </div>
+            <form method="post" action="{% url 'meals:generate_grocery' meal_plan.pk %}">
+                {% csrf_token %}
+                <button class="meal-menu-action h-12 px-6 text-sm font-black">Generate grocery list</button>
+            </form>
+        </div>
+        <div class="mt-7 flex flex-wrap gap-3">
+            <span class="meal-menu-pill"><span class="meal-thumb meal-thumb-sm meal-thumb-breakfast"></span>Breakfast</span>
+            <span class="meal-menu-pill"><span class="meal-thumb meal-thumb-sm meal-thumb-lunch"></span>Lunch</span>
+            <span class="meal-menu-pill"><span class="meal-thumb meal-thumb-sm meal-thumb-dinner"></span>Dinner</span>
+            <span class="meal-menu-pill"><span class="meal-thumb meal-thumb-sm meal-thumb-snack"></span>Snack</span>
+        </div>
+    </section>
+
+    <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_390px]">
+        <section class="space-y-6">
+            {% for day in planner_days %}
+            <div class="meal-menu-panel p-4 sm:p-5">
+                <div class="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <h2 class="text-2xl font-black text-[#201821]">{{ day.date|date:"l" }}</h2>
+                        <p class="text-xs font-black uppercase tracking-[0.16em] text-[#837079]">{{ day.date|date:"M d, Y" }}</p>
                     </div>
+                    <span class="rounded-full bg-rose-50 px-3 py-1 text-xs font-black text-rose-500">Daily menu</span>
+                </div>
 
-                    <div class="mt-8 grid gap-8 lg:grid-cols-[190px_minmax(0,1fr)]">
-                        <aside class="hidden lg:block text-white">
-                            <p class="text-xs font-bold uppercase tracking-[0.28em] text-white/75">{{ meal_plan.household.name }}</p>
-                            <h2 class="mt-5 font-serif text-4xl font-black leading-tight">Meals menu</h2>
-                            <div class="mt-10 space-y-4 text-sm font-bold">
-                                <div class="flex items-center gap-3">
-                                    <span class="meal-thumb meal-thumb-breakfast h-12 w-12 border-4"></span>
-                                    <span>Breakfast</span>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <span class="meal-thumb meal-thumb-lunch h-12 w-12 border-4"></span>
-                                    <span>Lunch</span>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <span class="meal-thumb meal-thumb-dinner h-12 w-12 border-4"></span>
-                                    <span>Dinner</span>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <span class="meal-thumb meal-thumb-snack h-12 w-12 border-4"></span>
-                                    <span>Snack</span>
-                                </div>
-                            </div>
-                        </aside>
+                <div class="grid gap-4 lg:grid-cols-2">
+                    {% for slot in day.slots %}
+                    <article class="meal-menu-card p-4 sm:p-5">
+                        <div class="flex items-start gap-4">
+                            {% if slot.key == "breakfast" %}
+                            <span class="meal-thumb meal-thumb-breakfast" aria-hidden="true"></span>
+                            {% elif slot.key == "lunch" %}
+                            <span class="meal-thumb meal-thumb-lunch" aria-hidden="true"></span>
+                            {% elif slot.key == "dinner" %}
+                            <span class="meal-thumb meal-thumb-dinner" aria-hidden="true"></span>
+                            {% else %}
+                            <span class="meal-thumb meal-thumb-snack" aria-hidden="true"></span>
+                            {% endif %}
 
-                        <div class="pl-[92px] sm:pl-[120px] lg:pl-0">
-                            <div class="max-w-3xl">
-                                <p class="text-sm font-bold uppercase tracking-[0.18em] text-rose-500">{{ meal_plan.start_date }} to {{ meal_plan.end_date }}</p>
-                                <h1 class="mt-3 font-serif text-4xl font-black leading-tight text-[#1f1720] sm:text-5xl">{{ meal_plan.title }}</h1>
-                                <p class="mt-3 max-w-xl text-sm leading-6 text-[#8f7d83]">Plan each day like a compact food menu, then generate your grocery list from the same saved slots.</p>
-                            </div>
-
-                            <div class="mt-8 space-y-7">
-                                {% for day in planner_days %}
-                                <section>
-                                    <div class="meal-menu-floating-card mb-4 flex items-end justify-between gap-3">
-                                        <div>
-                                            <h2 class="font-serif text-2xl font-black text-[#1f1720]">{{ day.date|date:"l" }}</h2>
-                                            <p class="text-xs font-bold uppercase tracking-[0.16em] text-[#8f7d83]">{{ day.date|date:"M d, Y" }}</p>
-                                        </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div>
+                                        <p class="text-xs font-black uppercase tracking-[0.16em] text-rose-500">{{ slot.label }}</p>
+                                        {% if slot.meal %}
+                                        <h3 class="mt-1 text-lg font-black leading-snug text-[#201821]">{{ slot.meal }}</h3>
+                                        <p class="mt-1 text-xs font-semibold text-[#837079]">{{ slot.meal.servings }} servings - {{ slot.meal.get_entry_type_display }}</p>
+                                        {% else %}
+                                        <h3 class="mt-1 text-lg font-black leading-snug text-[#201821]">No meal planned</h3>
+                                        <p class="mt-1 text-xs font-semibold text-[#837079]">Use the add panel to fill this slot.</p>
+                                        {% endif %}
                                     </div>
 
-                                    <div class="space-y-4">
-                                        {% for slot in day.slots %}
-                                        <article class="meal-menu-card meal-menu-floating-card p-4 sm:p-5">
-                                            <div class="flex items-start gap-4">
-                                                {% if slot.key == "breakfast" %}
-                                                <span class="meal-thumb meal-thumb-breakfast -ml-10 sm:-ml-12" aria-hidden="true"></span>
-                                                {% elif slot.key == "lunch" %}
-                                                <span class="meal-thumb meal-thumb-lunch -ml-10 sm:-ml-12" aria-hidden="true"></span>
-                                                {% elif slot.key == "dinner" %}
-                                                <span class="meal-thumb meal-thumb-dinner -ml-10 sm:-ml-12" aria-hidden="true"></span>
-                                                {% else %}
-                                                <span class="meal-thumb meal-thumb-snack -ml-10 sm:-ml-12" aria-hidden="true"></span>
-                                                {% endif %}
+                                    {% if slot.meal %}
+                                    <form method="post" action="{% url 'meals:delete_meal' meal_plan.pk slot.meal.pk %}">
+                                        {% csrf_token %}
+                                        <button class="grid h-9 w-9 place-items-center rounded-full bg-rose-50 text-sm font-black text-rose-500 hover:bg-rose-100" aria-label="Remove meal">x</button>
+                                    </form>
+                                    {% else %}
+                                    <span class="meal-menu-action h-9 w-9 text-lg font-black" aria-hidden="true">+</span>
+                                    {% endif %}
+                                </div>
 
-                                                <div class="min-w-0 flex-1">
-                                                    <div class="flex flex-wrap items-start justify-between gap-3">
-                                                        <div>
-                                                            <p class="text-xs font-black uppercase tracking-[0.16em] text-rose-500">{{ slot.label }}</p>
-                                                            {% if slot.meal %}
-                                                            <h3 class="mt-1 font-serif text-xl font-black text-[#1f1720]">{{ slot.meal }}</h3>
-                                                            <p class="mt-1 text-xs font-semibold text-[#8f7d83]">{{ slot.meal.servings }} servings - {{ slot.meal.get_entry_type_display }}</p>
-                                                            {% else %}
-                                                            <h3 class="mt-1 font-serif text-xl font-black text-[#1f1720]">No meal planned</h3>
-                                                            <p class="mt-1 text-xs font-semibold text-[#8f7d83]">Use the add panel to fill this slot.</p>
-                                                            {% endif %}
-                                                        </div>
+                                {% if slot.meal %}
+                                    {% if slot.meal.entry_type == 'custom' %}
+                                    <ul class="mt-4 space-y-2 text-xs font-semibold text-[#837079]">
+                                        {% for ingredient in slot.meal.custom_ingredients.all %}
+                                        <li class="flex justify-between gap-3 rounded-2xl bg-rose-50 px-3 py-2">
+                                            <span>{{ ingredient.name }}</span>
+                                            <span>{{ ingredient.quantity|floatformat:1 }} {{ ingredient.unit }}{% if ingredient.total_price_xaf %} - {{ ingredient.total_price_xaf|floatformat:0 }} XAF{% endif %}</span>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% endif %}
 
-                                                        {% if slot.meal %}
-                                                        <form method="post" action="{% url 'meals:delete_meal' meal_plan.pk slot.meal.pk %}">
-                                                            {% csrf_token %}
-                                                            <button class="grid h-9 w-9 place-items-center rounded-full bg-rose-50 text-sm font-black text-rose-500 hover:bg-rose-100" aria-label="Remove meal">x</button>
-                                                        </form>
-                                                        {% else %}
-                                                        <span class="meal-menu-action h-9 w-9 text-lg font-black" aria-hidden="true">+</span>
-                                                        {% endif %}
-                                                    </div>
-
-                                                    {% if slot.meal %}
-                                                        {% if slot.meal.entry_type == 'custom' %}
-                                                        <ul class="mt-4 space-y-2 text-xs font-semibold text-[#8f7d83]">
-                                                            {% for ingredient in slot.meal.custom_ingredients.all %}
-                                                            <li class="flex justify-between gap-3 rounded-2xl bg-rose-50 px-3 py-2">
-                                                                <span>{{ ingredient.name }}</span>
-                                                                <span>{{ ingredient.quantity|floatformat:1 }} {{ ingredient.unit }}{% if ingredient.total_price_xaf %} - {{ ingredient.total_price_xaf|floatformat:0 }} XAF{% endif %}</span>
-                                                            </li>
-                                                            {% endfor %}
-                                                        </ul>
-                                                        {% endif %}
-
-                                                        {% if slot.meal.analysis %}
-                                                        <div class="mt-4 rounded-3xl bg-rose-50 p-4">
-                                                            <div class="flex flex-wrap items-center justify-between gap-3">
-                                                                <strong class="text-sm text-[#1f1720]">{{ slot.meal.analysis.nutrition_strength }}</strong>
-                                                                <span class="text-xs font-black text-rose-500">{{ slot.meal.analysis.estimated_total_cost_xaf|floatformat:0 }} XAF</span>
-                                                            </div>
-                                                            <p class="mt-2 text-xs leading-5 text-[#8f7d83]">{{ slot.meal.analysis.advisory_summary }}</p>
-                                                            <div class="mt-3 grid grid-cols-2 gap-2 text-xs font-black text-[#1f1720] sm:grid-cols-4">
-                                                                <span>{{ slot.meal.analysis.calories|floatformat:0 }} kcal</span>
-                                                                <span>{{ slot.meal.analysis.protein|floatformat:0 }}g P</span>
-                                                                <span>{{ slot.meal.analysis.carbs|floatformat:0 }}g C</span>
-                                                                <span>{{ slot.meal.analysis.fat|floatformat:0 }}g F</span>
-                                                            </div>
-                                                            <details class="mt-3 text-xs text-[#8f7d83]">
-                                                                <summary class="cursor-pointer font-black text-[#1f1720]">Benefits and risks</summary>
-                                                                <div class="mt-3 grid gap-3 sm:grid-cols-2">
-                                                                    <div>
-                                                                        <p class="font-black text-[#1f1720]">Benefits</p>
-                                                                        <ul class="mt-1 list-disc space-y-1 pl-4">
-                                                                            {% for benefit in slot.meal.analysis.health_benefits %}<li>{{ benefit }}</li>{% endfor %}
-                                                                        </ul>
-                                                                    </div>
-                                                                    <div>
-                                                                        <p class="font-black text-[#1f1720]">Review points</p>
-                                                                        <ul class="mt-1 list-disc space-y-1 pl-4">
-                                                                            {% for risk in slot.meal.analysis.health_risks %}<li>{{ risk }}</li>{% endfor %}
-                                                                        </ul>
-                                                                    </div>
-                                                                </div>
-                                                            </details>
-                                                            <form method="post" action="{% url 'meals:analyze_meal' meal_plan.pk slot.meal.pk %}" class="mt-3">
-                                                                {% csrf_token %}
-                                                                <button class="text-xs font-black text-rose-500 hover:text-rose-700">Refresh analysis</button>
-                                                            </form>
-                                                        </div>
-                                                        {% endif %}
-                                                    {% endif %}
+                                    {% if slot.meal.analysis %}
+                                    <div class="mt-4 rounded-3xl bg-rose-50 p-4">
+                                        <div class="flex flex-wrap items-center justify-between gap-3">
+                                            <strong class="text-sm text-[#201821]">{{ slot.meal.analysis.nutrition_strength }}</strong>
+                                            <span class="text-xs font-black text-rose-500">{{ slot.meal.analysis.estimated_total_cost_xaf|floatformat:0 }} XAF</span>
+                                        </div>
+                                        <p class="mt-2 text-xs leading-5 text-[#837079]">{{ slot.meal.analysis.advisory_summary }}</p>
+                                        <div class="mt-3 grid grid-cols-2 gap-2 text-xs font-black text-[#201821] sm:grid-cols-4">
+                                            <span>{{ slot.meal.analysis.calories|floatformat:0 }} kcal</span>
+                                            <span>{{ slot.meal.analysis.protein|floatformat:0 }}g P</span>
+                                            <span>{{ slot.meal.analysis.carbs|floatformat:0 }}g C</span>
+                                            <span>{{ slot.meal.analysis.fat|floatformat:0 }}g F</span>
+                                        </div>
+                                        <details class="mt-3 text-xs text-[#837079]">
+                                            <summary class="cursor-pointer font-black text-[#201821]">Benefits and risks</summary>
+                                            <div class="mt-3 grid gap-3 sm:grid-cols-2">
+                                                <div>
+                                                    <p class="font-black text-[#201821]">Benefits</p>
+                                                    <ul class="mt-1 list-disc space-y-1 pl-4">
+                                                        {% for benefit in slot.meal.analysis.health_benefits %}<li>{{ benefit }}</li>{% endfor %}
+                                                    </ul>
+                                                </div>
+                                                <div>
+                                                    <p class="font-black text-[#201821]">Review points</p>
+                                                    <ul class="mt-1 list-disc space-y-1 pl-4">
+                                                        {% for risk in slot.meal.analysis.health_risks %}<li>{{ risk }}</li>{% endfor %}
+                                                    </ul>
                                                 </div>
                                             </div>
-                                        </article>
-                                        {% endfor %}
+                                        </details>
+                                        <form method="post" action="{% url 'meals:analyze_meal' meal_plan.pk slot.meal.pk %}" class="mt-3">
+                                            {% csrf_token %}
+                                            <button class="text-xs font-black text-rose-500 hover:text-rose-700">Refresh analysis</button>
+                                        </form>
                                     </div>
-                                </section>
-                                {% endfor %}
+                                    {% endif %}
+                                {% endif %}
                             </div>
                         </div>
+                    </article>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+
+        <aside class="space-y-5 xl:sticky xl:top-24 xl:self-start">
+            <div class="meal-menu-panel p-5" data-entry-type-root>
+                <div class="rounded-[24px] bg-[#fb3451] p-5 text-white">
+                    <p class="text-xs font-black uppercase tracking-[0.2em] text-white/75">Meal slot</p>
+                    <h2 class="mt-2 text-2xl font-black leading-tight">Add or replace meal</h2>
+                </div>
+
+                <form method="post" class="mt-5 space-y-4">
+                    {% csrf_token %}
+                    <div>
+                        <label class="block text-sm font-black text-[#201821] mb-1">{{ form.entry_type.label }}</label>
+                        <select name="{{ form.entry_type.html_name }}" id="{{ form.entry_type.id_for_label }}" class="form-input" data-entry-type-select>
+                            <option value="custom" {% if form.entry_type.value|default:'custom' == 'custom' %}selected{% endif %}>Custom meal</option>
+                            <option value="recipe" {% if form.entry_type.value == 'recipe' %}selected{% endif %}>Existing recipe</option>
+                        </select>
+                        {% if form.entry_type.errors %}<p class="mt-1 text-sm text-red-600">{{ form.entry_type.errors.0 }}</p>{% endif %}
                     </div>
+
+                    <div data-entry-section="recipe">
+                        <label class="block text-sm font-black text-[#201821] mb-1">{{ form.recipe.label }}</label>
+                        {{ form.recipe }}
+                        {% if form.recipe.errors %}<p class="mt-1 text-sm text-red-600">{{ form.recipe.errors.0 }}</p>{% endif %}
+                    </div>
+
+                    <div data-entry-section="custom">
+                        <label class="block text-sm font-black text-[#201821] mb-1">Meal title</label>
+                        {{ form.recipe_name }}
+                        {% if form.recipe_name.errors %}<p class="mt-1 text-sm text-red-600">{{ form.recipe_name.errors.0 }}</p>{% endif %}
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-black text-[#201821] mb-1">{{ form.date.label }}</label>
+                            {{ form.date }}
+                            {% if form.date.errors %}<p class="mt-1 text-sm text-red-600">{{ form.date.errors.0 }}</p>{% endif %}
+                        </div>
+                        <div>
+                            <label class="block text-sm font-black text-[#201821] mb-1">{{ form.meal_type.label }}</label>
+                            {{ form.meal_type }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-black text-[#201821] mb-1">{{ form.servings.label }}</label>
+                        {{ form.servings }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-black text-[#201821] mb-1">{{ form.notes.label }}</label>
+                        {{ form.notes }}
+                    </div>
+
+                    <div data-entry-section="custom" class="space-y-3">
+                        <div class="flex items-center justify-between gap-3">
+                            <h3 class="text-sm font-black text-[#201821]">Ingredients</h3>
+                            <button
+                                type="button"
+                                class="rounded-full bg-rose-50 px-3 py-2 text-xs font-black text-rose-500 hover:bg-rose-100"
+                                hx-get="{% url 'meals:ingredient_row' %}"
+                                hx-target="#ingredient-rows"
+                                hx-swap="beforeend"
+                            >
+                                Add ingredient
+                            </button>
+                        </div>
+                        <div id="ingredient-rows" class="space-y-3">
+                            {% for row in ingredient_row_numbers %}
+                            {% include "meals/partials/ingredient_row.html" %}
+                            {% endfor %}
+                        </div>
+                        <p class="text-xs leading-5 text-[#837079]">Prices are optional. If entered, EatFit calculates ingredient and meal totals.</p>
+                    </div>
+
+                    <button class="w-full rounded-full bg-[#fb3451] px-5 py-3 text-sm font-black text-white shadow-lg shadow-rose-100 hover:bg-[#e21f3d]">Save and analyze</button>
+                </form>
+            </div>
+
+            <div class="meal-menu-panel p-5">
+                <div class="flex items-center justify-between gap-3">
+                    <h2 class="text-xl font-black text-[#201821]">Plan summary</h2>
+                    <span class="meal-menu-action h-10 w-10 text-lg font-black" aria-hidden="true">=</span>
+                </div>
+                <div class="mt-5 space-y-3 text-sm">
+                    <div class="flex justify-between"><span class="text-[#837079]">Budget</span><strong>{{ budget.budget_xaf|floatformat:0 }} XAF</strong></div>
+                    <div class="flex justify-between"><span class="text-[#837079]">Grocery total</span><strong>{{ budget.total_xaf|floatformat:0 }} XAF</strong></div>
+                    <div class="flex justify-between {% if budget.is_over_budget %}text-red-700{% else %}text-green-700{% endif %}"><span>Remaining</span><strong>{{ budget.remaining_xaf|floatformat:0 }} XAF</strong></div>
+                    <div class="border-t border-rose-100 pt-3 flex justify-between"><span class="text-[#837079]">Calories</span><strong>{{ nutrition.calories|default:0|floatformat:0 }} kcal</strong></div>
+                    <div class="flex justify-between"><span class="text-[#837079]">Protein</span><strong>{{ nutrition.protein|default:0|floatformat:0 }} g</strong></div>
+                    <div class="flex justify-between"><span class="text-[#837079]">Carbs</span><strong>{{ nutrition.carbs|default:0|floatformat:0 }} g</strong></div>
+                    <div class="flex justify-between"><span class="text-[#837079]">Fat</span><strong>{{ nutrition.fat|default:0|floatformat:0 }} g</strong></div>
                 </div>
             </div>
 
-            <aside class="space-y-5">
-                <div class="rounded-[30px] bg-[#fffaf7] p-5 shadow-2xl shadow-rose-950/10" data-entry-type-root>
-                    <div class="rounded-[26px] bg-[#fb3451] p-5 text-white">
-                        <p class="text-xs font-bold uppercase tracking-[0.22em] text-white/75">Shopping cart</p>
-                        <h2 class="mt-2 font-serif text-3xl font-black leading-tight">Add meal</h2>
+            <div class="meal-menu-panel p-5">
+                <h2 class="text-xl font-black text-[#201821]">Recommendations</h2>
+                <div class="mt-4 space-y-3">
+                    {% for item in recommendations %}
+                    <div class="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-rose-100">
+                        <p class="font-black text-[#201821]">{{ item.recipe.title }}</p>
+                        <p class="mt-1 text-xs leading-5 text-[#837079]">{{ item.reason }}</p>
                     </div>
-
-                    <form method="post" class="mt-5 space-y-4">
-                        {% csrf_token %}
-                        <div>
-                            <label class="block text-sm font-black text-[#1f1720] mb-1">{{ form.entry_type.label }}</label>
-                            <select name="{{ form.entry_type.html_name }}" id="{{ form.entry_type.id_for_label }}" class="form-input" data-entry-type-select>
-                                <option value="custom" {% if form.entry_type.value|default:'custom' == 'custom' %}selected{% endif %}>Custom meal</option>
-                                <option value="recipe" {% if form.entry_type.value == 'recipe' %}selected{% endif %}>Existing recipe</option>
-                            </select>
-                            {% if form.entry_type.errors %}<p class="mt-1 text-sm text-red-600">{{ form.entry_type.errors.0 }}</p>{% endif %}
-                        </div>
-
-                        <div data-entry-section="recipe">
-                            <label class="block text-sm font-black text-[#1f1720] mb-1">{{ form.recipe.label }}</label>
-                            {{ form.recipe }}
-                            {% if form.recipe.errors %}<p class="mt-1 text-sm text-red-600">{{ form.recipe.errors.0 }}</p>{% endif %}
-                        </div>
-
-                        <div data-entry-section="custom">
-                            <label class="block text-sm font-black text-[#1f1720] mb-1">Meal title</label>
-                            {{ form.recipe_name }}
-                            {% if form.recipe_name.errors %}<p class="mt-1 text-sm text-red-600">{{ form.recipe_name.errors.0 }}</p>{% endif %}
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-sm font-black text-[#1f1720] mb-1">{{ form.date.label }}</label>
-                                {{ form.date }}
-                                {% if form.date.errors %}<p class="mt-1 text-sm text-red-600">{{ form.date.errors.0 }}</p>{% endif %}
-                            </div>
-                            <div>
-                                <label class="block text-sm font-black text-[#1f1720] mb-1">{{ form.meal_type.label }}</label>
-                                {{ form.meal_type }}
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-black text-[#1f1720] mb-1">{{ form.servings.label }}</label>
-                            {{ form.servings }}
-                        </div>
-                        <div>
-                            <label class="block text-sm font-black text-[#1f1720] mb-1">{{ form.notes.label }}</label>
-                            {{ form.notes }}
-                        </div>
-
-                        <div data-entry-section="custom" class="space-y-3">
-                            <div class="flex items-center justify-between gap-3">
-                                <h3 class="text-sm font-black text-[#1f1720]">Ingredients</h3>
-                                <button
-                                    type="button"
-                                    class="rounded-full bg-rose-50 px-3 py-2 text-xs font-black text-rose-500 hover:bg-rose-100"
-                                    hx-get="{% url 'meals:ingredient_row' %}"
-                                    hx-target="#ingredient-rows"
-                                    hx-swap="beforeend"
-                                >
-                                    Add ingredient
-                                </button>
-                            </div>
-                            <div id="ingredient-rows" class="space-y-3">
-                                {% for row in ingredient_row_numbers %}
-                                {% include "meals/partials/ingredient_row.html" %}
-                                {% endfor %}
-                            </div>
-                            <p class="text-xs leading-5 text-[#8f7d83]">Prices are optional. If entered, EatFit calculates ingredient and meal totals.</p>
-                        </div>
-
-                        <button class="w-full rounded-full bg-[#fb3451] px-5 py-3 text-sm font-black text-white shadow-lg shadow-rose-200 hover:bg-[#e21f3d]">Save and analyze</button>
-                    </form>
+                    {% empty %}
+                    <p class="text-sm leading-6 text-[#837079]">Add seeded recipes and profile preferences to see recommendations.</p>
+                    {% endfor %}
                 </div>
-
-                <div class="rounded-[30px] bg-[#fffaf7] p-5 shadow-2xl shadow-rose-950/10">
-                    <div class="flex items-center justify-between">
-                        <h2 class="font-serif text-2xl font-black text-[#1f1720]">Plan summary</h2>
-                        <span class="meal-menu-action h-10 w-10 text-lg font-black" aria-hidden="true">=</span>
-                    </div>
-                    <div class="mt-5 space-y-3 text-sm">
-                        <div class="flex justify-between"><span class="text-[#8f7d83]">Budget</span><strong>{{ budget.budget_xaf|floatformat:0 }} XAF</strong></div>
-                        <div class="flex justify-between"><span class="text-[#8f7d83]">Grocery total</span><strong>{{ budget.total_xaf|floatformat:0 }} XAF</strong></div>
-                        <div class="flex justify-between {% if budget.is_over_budget %}text-red-700{% else %}text-green-700{% endif %}"><span>Remaining</span><strong>{{ budget.remaining_xaf|floatformat:0 }} XAF</strong></div>
-                        <div class="border-t border-rose-100 pt-3 flex justify-between"><span class="text-[#8f7d83]">Calories</span><strong>{{ nutrition.calories|default:0|floatformat:0 }} kcal</strong></div>
-                        <div class="flex justify-between"><span class="text-[#8f7d83]">Protein</span><strong>{{ nutrition.protein|default:0|floatformat:0 }} g</strong></div>
-                        <div class="flex justify-between"><span class="text-[#8f7d83]">Carbs</span><strong>{{ nutrition.carbs|default:0|floatformat:0 }} g</strong></div>
-                        <div class="flex justify-between"><span class="text-[#8f7d83]">Fat</span><strong>{{ nutrition.fat|default:0|floatformat:0 }} g</strong></div>
-                    </div>
-                </div>
-
-                <div class="rounded-[30px] bg-[#fffaf7] p-5 shadow-2xl shadow-rose-950/10">
-                    <h2 class="font-serif text-2xl font-black text-[#1f1720]">Recommendations</h2>
-                    <div class="mt-4 space-y-3">
-                        {% for item in recommendations %}
-                        <div class="meal-menu-card p-4">
-                            <p class="font-black text-[#1f1720]">{{ item.recipe.title }}</p>
-                            <p class="mt-1 text-xs leading-5 text-[#8f7d83]">{{ item.reason }}</p>
-                        </div>
-                        {% empty %}
-                        <p class="text-sm leading-6 text-[#8f7d83]">Add seeded recipes and profile preferences to see recommendations.</p>
-                        {% endfor %}
-                    </div>
-                </div>
-            </aside>
-        </div>
-    </section>
+            </div>
+        </aside>
+    </div>
 </div>
 {% endblock %}
