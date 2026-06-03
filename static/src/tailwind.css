@@ -6,6 +6,133 @@
     .form-input {
         @apply w-full rounded-lg border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-green-500 focus:ring-green-500;
     }
+
+    .meal-menu {
+        --meal-red: #fb3451;
+        --meal-red-dark: #e21f3d;
+        --meal-cream: #fffaf7;
+        --meal-ink: #1f1720;
+        --meal-muted: #8f7d83;
+    }
+
+    .meal-menu-stage {
+        position: relative;
+        overflow: hidden;
+        border-radius: 28px;
+        background:
+            linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+            var(--meal-red);
+        background-size: 96px 96px;
+        box-shadow: 0 24px 60px rgba(225, 31, 61, 0.18);
+    }
+
+    .meal-menu-phone {
+        position: relative;
+        overflow: hidden;
+        border-radius: 30px;
+        background: var(--meal-cream);
+        box-shadow: 0 20px 45px rgba(31, 23, 32, 0.16);
+    }
+
+    .meal-menu-phone::before {
+        content: "";
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: clamp(86px, 20vw, 180px);
+        background: var(--meal-red);
+    }
+
+    .meal-menu-card {
+        position: relative;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid rgba(255, 225, 230, 0.95);
+        box-shadow: 0 14px 30px rgba(31, 23, 32, 0.09);
+    }
+
+    .meal-menu-floating-card {
+        margin-left: clamp(24px, 5vw, 56px);
+    }
+
+    .meal-thumb {
+        position: relative;
+        width: 58px;
+        height: 58px;
+        flex: 0 0 auto;
+        border-radius: 9999px;
+        border: 5px solid #fff;
+        box-shadow: 0 12px 22px rgba(31, 23, 32, 0.18);
+        background:
+            radial-gradient(circle at 50% 50%, #ffe9c7 0 27%, transparent 28%),
+            conic-gradient(from 20deg, #d33b21, #f8d56b, #238449, #f8b23a, #d33b21);
+    }
+
+    .meal-thumb::after {
+        content: "";
+        position: absolute;
+        inset: 10px;
+        border-radius: 9999px;
+        background:
+            radial-gradient(circle at 28% 34%, #fef3c7 0 8%, transparent 9%),
+            radial-gradient(circle at 70% 38%, #22c55e 0 8%, transparent 9%),
+            radial-gradient(circle at 48% 69%, #ef4444 0 10%, transparent 11%),
+            rgba(255, 250, 247, 0.2);
+    }
+
+    .meal-thumb-breakfast {
+        background:
+            radial-gradient(circle at 45% 46%, #fff7d6 0 25%, transparent 26%),
+            conic-gradient(from 35deg, #f7a21b, #fff1a8, #f97316, #ef4444, #f7a21b);
+    }
+
+    .meal-thumb-lunch {
+        background:
+            radial-gradient(circle at 50% 50%, #e8ffd1 0 24%, transparent 25%),
+            conic-gradient(from 20deg, #16a34a, #facc15, #ef4444, #f97316, #16a34a);
+    }
+
+    .meal-thumb-dinner {
+        background:
+            radial-gradient(circle at 48% 48%, #ffe4cf 0 24%, transparent 25%),
+            conic-gradient(from 10deg, #7f1d1d, #fb923c, #facc15, #b91c1c, #7f1d1d);
+    }
+
+    .meal-thumb-snack {
+        background:
+            radial-gradient(circle at 47% 50%, #fff7ed 0 25%, transparent 26%),
+            conic-gradient(from 0deg, #ec4899, #fde047, #fb7185, #fed7aa, #ec4899);
+    }
+
+    .meal-menu-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        background: linear-gradient(135deg, #ffcf42, #fb6a2f);
+        color: #fff;
+        box-shadow: 0 12px 24px rgba(251, 106, 47, 0.28);
+    }
+
+    .meal-menu .form-input,
+    .meal-menu input[type="text"],
+    .meal-menu input[type="date"],
+    .meal-menu input[type="number"],
+    .meal-menu select,
+    .meal-menu textarea {
+        border-radius: 16px !important;
+        border-color: #ffe1e8 !important;
+        background-color: #fff !important;
+        box-shadow: 0 8px 18px rgba(31, 23, 32, 0.05) !important;
+    }
+
+    .meal-menu .form-input:focus,
+    .meal-menu input:focus,
+    .meal-menu select:focus,
+    .meal-menu textarea:focus {
+        border-color: var(--meal-red) !important;
+        box-shadow: 0 0 0 3px rgba(251, 52, 81, 0.16) !important;
+    }
 }
 
 @layer utilities {

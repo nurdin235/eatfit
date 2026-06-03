@@ -1,37 +1,70 @@
 {% extends "base/base.html" %}
-{% block title %}Create Meal Plan - EatFit{% endblock %}
-{% block content %}
-<div class="max-w-2xl mx-auto">
-    <div class="mb-8">
-        <a href="{% url 'meals:index' %}" class="text-sm font-medium text-green-600 hover:text-green-700 flex items-center mb-4">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-            Back to Plans
-        </a>
-        <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Create Meal Plan</h1>
-        <p class="mt-2 text-sm text-gray-600">Plan for one day, one week, or a custom date range. Weekly plans end automatically six days after the start date.</p>
-    </div>
 
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-        <form method="POST" class="space-y-6">
-            {% csrf_token %}
-            {% for field in form %}
-            <div>
-                <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ field.label }}</label>
-                {{ field }}
-                {% if field.name == 'planning_period' %}
-                <p class="mt-1 text-xs text-gray-500">Choose custom range only when you want to enter an end date manually.</p>
-                {% endif %}
-                {% if field.errors %}
-                <p class="mt-1 text-sm text-red-600">{{ field.errors.0 }}</p>
-                {% endif %}
+{% block title %}Create Meal Plan | EatFit{% endblock %}
+
+{% block content %}
+<div class="meal-menu mx-auto max-w-6xl">
+    <section class="meal-menu-stage p-3 sm:p-5 lg:p-8">
+        <div class="meal-menu-phone min-h-[680px]">
+            <div class="relative z-10 p-5 sm:p-8 lg:p-10">
+                <div class="flex items-center justify-between gap-4">
+                    <a href="{% url 'meals:index' %}" class="grid h-10 w-10 place-items-center rounded-full bg-white/15 text-white lg:bg-transparent" aria-label="Back to meal plans">
+                        <span class="text-2xl leading-none">&lsaquo;</span>
+                    </a>
+                    <span class="meal-menu-action h-12 w-12 text-xl font-black" aria-hidden="true">+</span>
+                </div>
+
+                <div class="mt-8 grid gap-8 lg:grid-cols-[190px_minmax(0,1fr)]">
+                    <aside class="hidden lg:block text-white">
+                        <p class="text-xs font-bold uppercase tracking-[0.28em] text-white/75">EatFit</p>
+                        <h2 class="mt-5 font-serif text-4xl font-black leading-tight">Create menu</h2>
+                        <div class="mt-10 space-y-4 text-sm font-bold">
+                            <div class="flex items-center gap-3">
+                                <span class="meal-thumb meal-thumb-breakfast h-12 w-12 border-4"></span>
+                                <span>Pick dates</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="meal-thumb meal-thumb-lunch h-12 w-12 border-4"></span>
+                                <span>Set budget</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="meal-thumb meal-thumb-dinner h-12 w-12 border-4"></span>
+                                <span>Add meals</span>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <div class="pl-[92px] sm:pl-[120px] lg:pl-0">
+                        <div class="max-w-2xl">
+                            <p class="text-sm font-bold uppercase tracking-[0.18em] text-rose-500">Order manually</p>
+                            <h1 class="mt-3 font-serif text-4xl font-black leading-tight text-[#1f1720] sm:text-5xl">Create meal plan</h1>
+                            <p class="mt-3 text-sm leading-6 text-[#8f7d83]">Plan for one day, one week, or a custom date range. Weekly plans end automatically six days after the start date.</p>
+                        </div>
+
+                        <div class="meal-menu-card meal-menu-floating-card mt-8 max-w-2xl p-5 sm:p-7">
+                            <form method="POST" class="space-y-5">
+                                {% csrf_token %}
+                                {% for field in form %}
+                                <div>
+                                    <label for="{{ field.id_for_label }}" class="block text-sm font-black text-[#1f1720] mb-1">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.name == 'planning_period' %}
+                                    <p class="mt-2 text-xs leading-5 text-[#8f7d83]">Choose custom range only when you want to enter an end date manually.</p>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                    <p class="mt-1 text-sm text-red-600">{{ field.errors.0 }}</p>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                                <button type="submit" class="w-full rounded-full bg-[#fb3451] px-6 py-3 text-sm font-black text-white shadow-lg shadow-rose-200 hover:bg-[#e21f3d]">
+                                    Create plan
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
-            {% endfor %}
-            <div class="pt-4">
-                <button type="submit" class="w-full bg-green-600 text-white px-6 py-3 rounded-xl shadow-sm hover:bg-green-700 font-bold transition-all">
-                    Create Plan
-                </button>
-            </div>
-        </form>
-    </div>
+        </div>
+    </section>
 </div>
 {% endblock %}
