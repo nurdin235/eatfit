@@ -149,6 +149,14 @@ if env_bool('DB_SSL_REQUIRE', DB_SSL_DEFAULT):
 # Django server-side cursors safely.
 DATABASES['default']['DISABLE_SERVER_SIDE_CURSORS'] = env_bool('DB_DISABLE_SERVER_SIDE_CURSORS', True)
 
+DB_HOST_CONFIGURED = str(DATABASES['default'].get('HOST') or '')
+DB_PORT_CONFIGURED = str(DATABASES['default'].get('PORT') or '')
+USES_SUPABASE_TRANSACTION_POOLER = (
+    DB_HOST_CONFIGURED.endswith('.pooler.supabase.com') and DB_PORT_CONFIGURED == '6543'
+)
+if env_bool('DB_DISABLE_PREPARED_STATEMENTS', USES_SUPABASE_TRANSACTION_POOLER):
+    DATABASES['default'].setdefault('OPTIONS', {})['prepare_threshold'] = None
+
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {
