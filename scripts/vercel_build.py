@@ -1,6 +1,13 @@
 import os
 import subprocess
 import sys
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / '.env')
 
 
 def enabled(name, default=False):
@@ -11,6 +18,7 @@ def enabled(name, default=False):
 
 
 def run(*args):
+    print(f":: Running django {' '.join(args)}", flush=True)
     subprocess.run([sys.executable, 'manage.py', *args], check=True)
 
 
@@ -21,6 +29,7 @@ def database_configured():
 
 
 def main():
+    print(":: Starting EatFit Vercel build", flush=True)
     run('collectstatic', '--noinput')
 
     if enabled('RUN_DEPLOY_CHECKS', default=True):
