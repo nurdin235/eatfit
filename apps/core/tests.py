@@ -11,6 +11,15 @@ from apps.meals.services import MealAnalysisService, MealCostService
 from apps.notifications.models import Notification
 from apps.notifications.services import ReminderService
 from apps.recipes.models import Ingredient, Recipe, RecipeIngredient
+from apps.users.session_lifecycle import (
+    SESSION_LAST_SEEN_AT,
+    SESSION_REMEMBERED,
+    SESSION_ROTATED_AT,
+    SESSION_STARTED_AT,
+    SESSION_USER_AGENT_HASH,
+    _now,
+    _stable_hash,
+)
 from apps.users.models import HouseholdMembership, Profile, User
 
 
@@ -58,6 +67,18 @@ class EatFitFlowTests(TestCase):
             servings=2,
         )
 
+    def _prepare_authenticated_session(self, user_agent='EatFitTestBrowser/1'):
+        self.client.force_login(self.user)
+        session = self.client.session
+        now = _now()
+        session[SESSION_STARTED_AT] = now
+        session[SESSION_LAST_SEEN_AT] = now
+        session[SESSION_ROTATED_AT] = now
+        session[SESSION_REMEMBERED] = False
+        session[SESSION_USER_AGENT_HASH] = _stable_hash(user_agent)
+        session.save()
+        return session
+
     def test_dashboard_requires_login(self):
         response = self.client.get(reverse('dashboard'))
         self.assertEqual(response.status_code, 302)
@@ -80,6 +101,82 @@ class EatFitFlowTests(TestCase):
         user = User.objects.get(username='deirdre')
         self.assertIsNotNone(user.active_household)
         self.assertTrue(Profile.objects.filter(user=user).exists())
+        self.assertIn(SESSION_STARTED_AT, client.session)
+        self.assertFalse(client.session.get(SESSION_REMEMBERED))
+
+    def test_login_initializes_session_lifecycle(self):
+        response = self.client.post(
+            reverse('auth:login'),
+            {'username': 'nurdi', 'password': 'StrongPass123!'},
+            HTTP_USER_AGENT='EatFitTestBrowser/1',
+        )
+        self.assertEqual(response.status_code, 302)
+        session = self.client.session
+        self.assertIn(SESSION_STARTED_AT, session)
+        self.assertIn(SESSION_LAST_SEEN_AT, session)
+        self.assertIn(SESSION_ROTATED_AT, session)
+        self.assertFalse(session.get(SESSION_REMEMBERED))
+
+    def test_remember_me_uses_persistent_session_window(self):
+        response = self.client.post(
+            reverse('auth:login'),
+            {'username': 'nurdi', 'password': 'StrongPass123!', 'remember-me': 'on'},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(self.client.session.get(SESSION_REMEMBERED))
+        self.assertGreaterEqual(self.client.session.get_expiry_age(), 60 * 60 * 24 * 6)
+
+    @override_settings(SESSION_IDLE_TIMEOUT_SECONDS=60)
+    def test_idle_timeout_terminates_authenticated_session(self):
+        session = self._prepare_authenticated_session()
+        session[SESSION_LAST_SEEN_AT] = _now() - 120
+        session.save()
+
+        response = self.client.get(reverse('dashboard'), HTTP_USER_AGENT='EatFitTestBrowser/1')
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('session=idle_timeout', response.url)
+        self.assertEqual(response['Clear-Site-Data'], '"cookies", "storage"')
+        self.assertNotIn('_auth_user_id', self.client.session)
+
+    @override_settings(SESSION_ABSOLUTE_TIMEOUT_SECONDS=60)
+    def test_absolute_timeout_terminates_authenticated_session(self):
+        session = self._prepare_authenticated_session()
+        session[SESSION_STARTED_AT] = _now() - 120
+        session.save()
+
+        response = self.client.get(reverse('dashboard'), HTTP_USER_AGENT='EatFitTestBrowser/1')
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('session=absolute_timeout', response.url)
+        self.assertEqual(response['Clear-Site-Data'], '"cookies", "storage"')
+        self.assertNotIn('_auth_user_id', self.client.session)
+
+    def test_user_agent_change_terminates_authenticated_session(self):
+        self._prepare_authenticated_session(user_agent='EatFitTestBrowser/1')
+        response = self.client.get(reverse('dashboard'), HTTP_USER_AGENT='DifferentBrowser/2')
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('session=client_changed', response.url)
+        self.assertEqual(response['Clear-Site-Data'], '"cookies", "storage"')
+        self.assertNotIn('_auth_user_id', self.client.session)
+
+    @override_settings(SESSION_ROTATION_SECONDS=60)
+    def test_session_key_rotates_during_long_lived_session(self):
+        self._prepare_authenticated_session()
+        old_session_key = self.client.session.session_key
+        session = self.client.session
+        session[SESSION_ROTATED_AT] = _now() - 120
+        session.save()
+
+        response = self.client.get(reverse('dashboard'), HTTP_USER_AGENT='EatFitTestBrowser/1')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(old_session_key, self.client.session.session_key)
+
+    def test_logout_flushes_session_and_sets_cleanup_headers(self):
+        self._prepare_authenticated_session()
+        response = self.client.post(reverse('auth:logout'))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['Clear-Site-Data'], '"cookies", "storage"')
+        self.assertEqual(response['Cache-Control'], 'no-store, private')
+        self.assertNotIn('_auth_user_id', self.client.session)
 
     def test_grocery_generation_merges_structured_ingredients(self):
         grocery_list = GroceryGenerationService.generate(self.plan, self.user)

@@ -93,6 +93,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'apps.users.session_lifecycle.SessionLifecycleMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'apps.core.middleware.SecurityHeadersMiddleware',
@@ -254,6 +255,14 @@ SESSION_COOKIE_SAMESITE = os.environ.get('SESSION_COOKIE_SAMESITE', 'Lax')
 CSRF_COOKIE_SAMESITE = os.environ.get('CSRF_COOKIE_SAMESITE', 'Lax')
 SESSION_COOKIE_AGE = env_int('SESSION_COOKIE_AGE', 60 * 60 * 24 * 14)
 SESSION_SAVE_EVERY_REQUEST = env_bool('SESSION_SAVE_EVERY_REQUEST', False)
+SESSION_IDLE_TIMEOUT_SECONDS = env_int('SESSION_IDLE_TIMEOUT_SECONDS', 30 * 60)
+SESSION_ABSOLUTE_TIMEOUT_SECONDS = env_int('SESSION_ABSOLUTE_TIMEOUT_SECONDS', 8 * 60 * 60)
+SESSION_REMEMBER_IDLE_TIMEOUT_SECONDS = env_int('SESSION_REMEMBER_IDLE_TIMEOUT_SECONDS', 7 * 24 * 60 * 60)
+SESSION_REMEMBER_ABSOLUTE_TIMEOUT_SECONDS = env_int('SESSION_REMEMBER_ABSOLUTE_TIMEOUT_SECONDS', 14 * 24 * 60 * 60)
+SESSION_ROTATION_SECONDS = env_int('SESSION_ROTATION_SECONDS', 15 * 60)
+SESSION_BIND_USER_AGENT = env_bool('SESSION_BIND_USER_AGENT', True)
+SESSION_BIND_IP_PREFIX = env_bool('SESSION_BIND_IP_PREFIX', False)
+SESSION_CLEAR_SITE_DATA_ON_LOGOUT = env_bool('SESSION_CLEAR_SITE_DATA_ON_LOGOUT', True)
 SECURE_SSL_REDIRECT = env_bool('SECURE_SSL_REDIRECT', False if DEBUG else True)
 SECURE_HSTS_SECONDS = int(os.environ.get('SECURE_HSTS_SECONDS', '0' if DEBUG else '31536000'))
 SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool('SECURE_HSTS_INCLUDE_SUBDOMAINS', not DEBUG)

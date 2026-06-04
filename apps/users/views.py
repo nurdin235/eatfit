@@ -7,6 +7,7 @@ from django.views.decorators.http import require_POST
 from django_ratelimit.decorators import ratelimit
 from .forms import CustomUserCreationForm, CustomAuthenticationForm, HouseholdInviteForm, ProfileForm
 from .models import HouseholdMembership, Profile
+from .session_lifecycle import apply_session_death_headers, start_session_lifecycle
 from .services import add_member_by_username, get_active_household, user_role
 
 @ratelimit(key='ip', rate='5/m', method='POST', block=True)
@@ -24,6 +25,7 @@ def register_view(request):
             user.ensure_household()
             Profile.objects.get_or_create(user=user)
             login(request, user)
+            start_session_lifecycle(request, remember=False)
             messages.success(request, "Registration successful. Welcome to EatFit!")
             return redirect('dashboard')
         else:
@@ -49,10 +51,7 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                if request.POST.get('remember-me') == 'on':
-                    request.session.set_expiry(60 * 60 * 24 * 14)
-                else:
-                    request.session.set_expiry(0)
+                start_session_lifecycle(request, remember=request.POST.get('remember-me') == 'on')
                 messages.info(request, f"You are now logged in as {username}.")
                 return redirect('dashboard')
             else:
@@ -71,7 +70,8 @@ def logout_view(request):
 
     logout(request)
     messages.info(request, "You have successfully logged out.")
-    return redirect('auth:login')
+    response = redirect('auth:login')
+    return apply_session_death_headers(response)
 
 
 @login_required
